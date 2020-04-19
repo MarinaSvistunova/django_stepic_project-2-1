@@ -1,1 +1,1 @@
-web: gunicorn careers.wsgi
+web: gunicorn careers/careers.wsgi
