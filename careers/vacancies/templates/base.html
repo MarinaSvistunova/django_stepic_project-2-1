@@ -1,12 +1,14 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
-  {% block menu %}
+
+
     <header class="container mt-3">
+      {% block menu %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand mr-4" href="#">Джуманджи</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,39 +17,43 @@
       <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
         <ul class="navbar-nav col-10">
           {% for title_key, title_value in menu_titles.items %}
-            <li class="nav-item {% if title_value == request.path %}active{% endif %}">
-              <a class="nav-link" href="/{{ title_value }}">{{ title_key }}</a>
+            {% url title_value as the_url %}
+            <li class="nav-item {% if the_url == request.path %}active{% endif %}">
+              <a class="nav-link" href="{{ the_url }}">{{ title_key }}</a>
             </li>
           {% endfor %}
         </ul>
-        <ul class="navbar-nav col-2 justify-content-end">
+        {% if user.is_authenticated %}
+          <ul class="navbar-nav col-2 justify-content-end">
           <li class="nav-item active">
-            <a href="#" class="nav-link font-weight-bold">Вход</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    </header>
-  {% endblock %}
-
-  {% block card %}
-  {% for vacancy_id, vacancy in vacancies.items %}
-          <div class="card mb-4">
-            <div class="card-body px-4">
-              <div class="row">
-                <div class="col-12 col-md-8 col-lg-9">
-                  <a class="stretched-link" style="color: black; text-decoration: none;" href="{% url 'jobs_view' id=vacancy_id %}"><h2 class="h2 pb-2">{{ vacancy.title }}</h2></a>
-                  <p class="mb-2">{{ vacancy.specialty }}{% for skill in vacancy.skills %} • {{ skill }}{% endfor %}</p>
-                  <p>От {{ vacancy.salary_min }} до {{ vacancy.salary_max }}.</p>
-                  <p class="text-muted pt-1">{{ vacancy.date }}</p>
-                </div>
-                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
-                  <img src="{{ vacancy.logo }}" width="130" height="80" alt="">
-                </div>
+            <div class="btn-group">
+              <button type="button" class="btn dropdown-toggle font-weight-bold" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ user.username }}
+              </button>
+              <div class="dropdown-menu dropdown-menu-right mt-3">
+                {% for title_key, title_value in dropdown_menu.items %}
+                  {% url title_value as the_url %}
+                  <a href="{{ the_url }}" class="dropdown-item py-2 {% if the_url == request.path %}active{% endif %}">
+                    {{ title_key }}
+                  </a>
+                {% endfor %}
               </div>
             </div>
-          </div>
-          {% endfor %}
-  {% endblock %}
+          </li>
+        </ul>
+        {% else %}
+          <ul class="navbar-nav col-2 justify-content-end">
+          <li class="nav-item active">
+            <a href="{% url 'login_view' %}" class="nav-link font-weight-bold">Вход</a>
+          </li>
+        </ul>
+        {% endif %}
+      </div>
+    </nav>
+      {% endblock menu%}
+    </header>
+
+<body>
+
 </body>
 </html>
